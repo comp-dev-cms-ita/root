@@ -256,13 +256,10 @@ static PyObject* mp_func_overloads_types(CPPOverload* pymeth, void*)
 
     CPPOverload::Methods_t& methods = pymeth->fMethodInfo->fMethods;
 
-    CPPOverload::Methods_t::size_type nMethods = methods.size();
-    if (nMethods == 0) // from template proxy with no instantiations
-        return nullptr;
-
     PyObject* overloads_types_dict = PyDict_New();
-    for (CPPOverload::Methods_t::size_type i = 0; i < nMethods; ++i) {
-        PyDict_SetItem(overloads_types_dict, methods[i]->GetSignature(), methods[i]->GetSignatureTypes());
+
+    for (const auto &method: methods) {
+        PyDict_SetItem(overloads_types_dict, method->GetSignature(), method->GetSignatureTypes());
     }
 
     return overloads_types_dict;
@@ -274,13 +271,10 @@ static PyObject* mp_func_overloads_names(CPPOverload* pymeth, void*)
 
     CPPOverload::Methods_t& methods = pymeth->fMethodInfo->fMethods;
 
-    CPPOverload::Methods_t::size_type nMethods = methods.size();
-    if (nMethods == 0) // from template proxy with no instantiations
-        return nullptr;
-
     PyObject* overloads_names_dict = PyDict_New();
-    for (CPPOverload::Methods_t::size_type i = 0; i < nMethods; ++i) {
-        PyDict_SetItem(overloads_names_dict, methods[i]->GetSignature(), methods[i]->GetSignatureNames());
+
+    for (const auto &method: methods) {
+        PyDict_SetItem(overloads_names_dict, method->GetSignature(), method->GetSignatureNames());
     }
 
     return overloads_names_dict;
