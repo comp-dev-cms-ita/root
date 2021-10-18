@@ -801,8 +801,41 @@ PyObject* CPyCppyy::CPPMethod::GetSignature(bool fa)
     return CPyCppyy_PyText_FromString(GetSignatureString(fa).c_str());
 }
 
+PyObject *CPyCppyy::CPPMethod::GetSignatureNames()
+{
+   // Build a tuple of the argument names for this signature.
+   int argcount = GetMaxArgs();
+
+   PyObject *signature_names = PyTuple_New(argcount);
+   for (int iarg = 0; iarg < argcount; ++iarg) {
+      const std::string &argname_cpp = Cppyy::GetMethodArgName(fMethod, iarg);
+
+      PyObject *argname_py = CPyCppyy_PyText_FromString(argname_cpp.c_str());
+      PyTuple_SET_ITEM(signature_names, iarg, argname_py);
+   }
+
+   return signature_names;
+}
+
+PyObject *CPyCppyy::CPPMethod::GetSignatureTypes()
+{
+   // Build a tuple of the argument types for this signature.
+   int argcount = GetMaxArgs();
+
+   PyObject *signature_types = PyTuple_New(argcount);
+   for (int iarg = 0; iarg < argcount; ++iarg) {
+      const std::string &argtype_cpp = Cppyy::GetMethodArgType(fMethod, iarg);
+
+      PyObject *argtype_py = CPyCppyy_PyText_FromString(argtype_cpp.c_str());
+      PyTuple_SET_ITEM(signature_types, iarg, argtype_py);
+   }
+
+   return signature_types;
+}
+
 //----------------------------------------------------------------------------
 std::string CPyCppyy::CPPMethod::GetReturnTypeName()
 {
     return Cppyy::GetMethodResultType(fMethod);
 }
+

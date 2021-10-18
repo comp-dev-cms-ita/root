@@ -24,6 +24,8 @@ public:
 
 public:
     virtual PyObject* GetSignature(bool show_formalargs = true);
+    PyObject* GetSignatureNames() override;
+    PyObject* GetSignatureTypes() override;
     virtual PyObject* GetPrototype(bool show_formalargs = true);
     virtual int       GetPriority();
     virtual bool IsGreedy();
@@ -88,3 +90,4 @@ protected:
 } // namespace CPyCppyy
 
 #endif // !CPYCPPYY_CPPMETHOD_H
+

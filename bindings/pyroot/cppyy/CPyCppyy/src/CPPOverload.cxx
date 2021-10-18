@@ -58,6 +58,16 @@ public:
     virtual PyObject* GetSignature(bool /*show_formalargs*/ = true) {
         return CPyCppyy_PyText_FromString("*args, **kwargs");
     }
+
+
+    PyObject* GetSignatureNames() override {
+        return PyTuple_New(0);
+    }
+
+    PyObject* GetSignatureTypes() override {
+        return PyTuple_New(0);
+    }
+
     virtual PyObject* GetPrototype(bool /*show_formalargs*/ = true) {
         return CPyCppyy_PyText_FromString("<callback>");
     }
@@ -239,6 +249,42 @@ static PyObject* mp_doc(CPPOverload* pymeth, void*)
     Py_DECREF(separator);
 
     return doc;
+}
+
+static PyObject* mp_func_overloads_types(CPPOverload* pymeth, void*)
+{
+
+    CPPOverload::Methods_t& methods = pymeth->fMethodInfo->fMethods;
+
+    CPPOverload::Methods_t::size_type nMethods = methods.size();
+    if (nMethods == 0) // from template proxy with no instantiations
+        return nullptr;
+
+    PyObject* overloads_types_dict = PyDict_New();
+    for (CPPOverload::Methods_t::size_type i = 0; i < nMethods; ++i) {
+        PyDict_SetItem(overloads_types_dict, methods[i]->GetSignature(), methods[i]->GetSignatureTypes());
+    }
+
+    return overloads_types_dict;
+
+}
+
+static PyObject* mp_func_overloads_names(CPPOverload* pymeth, void*)
+{
+
+    CPPOverload::Methods_t& methods = pymeth->fMethodInfo->fMethods;
+
+    CPPOverload::Methods_t::size_type nMethods = methods.size();
+    if (nMethods == 0) // from template proxy with no instantiations
+        return nullptr;
+
+    PyObject* overloads_names_dict = PyDict_New();
+    for (CPPOverload::Methods_t::size_type i = 0; i < nMethods; ++i) {
+        PyDict_SetItem(overloads_names_dict, methods[i]->GetSignature(), methods[i]->GetSignatureNames());
+    }
+
+    return overloads_names_dict;
+
 }
 
 //----------------------------------------------------------------------------
@@ -514,6 +560,8 @@ static PyGetSetDef mp_getset[] = {
     {(char*)"func_globals",  (getter)mp_func_globals,  nullptr, nullptr, nullptr},
     {(char*)"func_doc",      (getter)mp_doc,           nullptr, nullptr, nullptr},
     {(char*)"func_name",     (getter)mp_name,          nullptr, nullptr, nullptr},
+    {(char*)"func_overloads_types",    (getter)mp_func_overloads_types,    nullptr, nullptr, nullptr},
+    {(char*)"func_overloads_names",    (getter)mp_func_overloads_names,    nullptr, nullptr, nullptr},
 
     {(char*)"__creates__",         (getter)mp_getcreates, (setter)mp_setcreates,
       (char*)"For ownership rules of result: if true, objects are python-owned", nullptr},
@@ -971,3 +1019,4 @@ CPyCppyy::CPPOverload::MethodInfo_t::~MethodInfo_t()
 }
 
 // TODO: something like PyMethod_Fini to clear up the free_list
+
