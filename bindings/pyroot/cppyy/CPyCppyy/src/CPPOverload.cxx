@@ -60,11 +60,11 @@ public:
     }
 
 
-    PyObject* GetSignatureNames() override {
+    virtual PyObject* GetSignatureNames() {
         return PyTuple_New(0);
     }
 
-    PyObject* GetSignatureTypes() override {
+    virtual PyObject* GetSignatureTypes() {
         return PyTuple_New(0);
     }
 
