@@ -1,4 +1,5 @@
 # Author: Danilo Piparo, Massimiliano Galli CERN  08/2018
+# Author: Vincenzo Eduardo Padulano CERN 02/2022
 
 ################################################################################
 # Copyright (C) 1995-2018, Rene Brun and Fons Rademakers.                      #
@@ -42,6 +43,7 @@ from libROOTPythonizations import AddFileOpenPyz
 from . import pythonization
 from libcppyy import bind_object
 
+
 def _TFileConstructor(self, *args):
     # Redefinition of ROOT.TFile(str, ...):
     # check if the instance of TFile has IsZombie() = True
@@ -53,6 +55,7 @@ def _TFileConstructor(self, *args):
     if len(args) >= 1:
         if self.IsZombie():
             raise OSError('Failed to open file {}'.format(args[0]))
+
 
 def _TFileOpen(klass, *args):
     # Redefinition of ROOT.TFile.Open(str, ...):
@@ -66,6 +69,22 @@ def _TFileOpen(klass, *args):
         # args[0] can be either a string or a TFileOpenHandle
         raise OSError('Failed to open file {}'.format(str(args[0])))
     return f
+
+
+def _TFileEnter(obj):
+    """
+    Define a __enter__ method for TFile. Return the opened file
+    """
+    return obj
+
+
+def _TFileExit(obj, exc_type, exc_val, exc_tb):
+    """
+    Define a __exit__ method for TFile
+    Just close the TFile object. signature is imposed by Python, see
+    https://docs.python.org/3/library/stdtypes.html#typecontextmanager
+    """
+    obj.Close()
 
 # Pythonizor function
 @pythonization('TFile')
@@ -84,3 +103,8 @@ def pythonize_tfile(klass):
     # Pythonization for TFile constructor
     klass._OriginalConstructor = klass.__init__
     klass.__init__ = _TFileConstructor
+
+    # Pythonization for __enter__ and __exit__ methods
+    # These make TFile usable in a `with` statement as a context manager
+    klass.__enter__ = _TFileEnter
+    klass.__exit__ = _TFileExit
