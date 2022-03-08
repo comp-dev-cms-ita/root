@@ -2649,11 +2649,12 @@ void TChain::SetDirectory(TDirectory* dir)
    if (fDirectory == dir) return;
    if (fDirectory) fDirectory->Remove(this);
    fDirectory = dir;
-   if (fDirectory) {
+   if (fDirectory && fDirectory->GetAcceptsRegisters()) {
       fDirectory->Append(this);
       fFile = fDirectory->GetFile();
    } else {
-      fFile = 0;
+      fDirectory = nullptr;
+      fFile = nullptr;
    }
 }
 

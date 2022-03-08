@@ -790,9 +790,11 @@ void TH1::Build()
 
    if (TH1::AddDirectoryStatus()) {
       fDirectory = gDirectory;
-      if (fDirectory) {
+      if (fDirectory && fDirectory->GetAcceptsRegisters()) {
          fFunctions->UseRWLock();
          fDirectory->Append(this,kTRUE);
+      } else {
+         fDirectory = nullptr;
       }
    }
 }
@@ -2721,7 +2723,7 @@ void TH1::Copy(TObject &obj) const
    // will be added to gDirectory independently of the fDirectory stored.
    // and if the AddDirectoryStatus() is false it will not be added to
    // any directory (fDirectory = nullptr)
-   if (fgAddDirectory && gDirectory) {
+   if (fgAddDirectory && gDirectory && gDirectory->GetAcceptsRegisters()) {
       gDirectory->Append(&obj);
       ((TH1&)obj).fFunctions->UseRWLock();
       ((TH1&)obj).fDirectory = gDirectory;
@@ -8810,9 +8812,11 @@ void TH1::SetDirectory(TDirectory *dir)
    if (fDirectory == dir) return;
    if (fDirectory) fDirectory->Remove(this);
    fDirectory = dir;
-   if (fDirectory) {
+   if (fDirectory && fDirectory->GetAcceptsRegisters()) {
       fFunctions->UseRWLock();
       fDirectory->Append(this);
+   } else {
+      fDirectory = nullptr;
    }
 }
 
@@ -8836,7 +8840,11 @@ void TH1::SetName(const char *name)
    R__LOCKGUARD(gROOTMutex);
    if (fDirectory) fDirectory->Remove(this);
    fName = name;
-   if (fDirectory) fDirectory->Append(this);
+   if (fDirectory && fDirectory->GetAcceptsRegisters()){
+      fDirectory->Append(this);
+   } else {
+      fDirectory = nullptr;
+   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

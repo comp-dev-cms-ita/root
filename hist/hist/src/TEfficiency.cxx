@@ -3317,8 +3317,11 @@ void TEfficiency::SetDirectory(TDirectory* dir)
    if(fDirectory)
       fDirectory->Remove(this);
    fDirectory = dir;
-   if(fDirectory)
+   if(fDirectory && fDirectory->GetAcceptsRegisters()){
       fDirectory->Append(this);
+   } else {
+      fDirectory = nullptr;
+   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

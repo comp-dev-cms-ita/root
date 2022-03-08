@@ -83,7 +83,11 @@ TEventList::TEventList(const char *name, const char *title, Int_t initsize, Int_
    else                fDelta = 100;
    fList       = 0;
    fDirectory  = gDirectory;
-   if (fDirectory) fDirectory->Append(this);
+   if(fDirectory && fDirectory->GetAcceptsRegisters()){
+      fDirectory->Append(this);
+   } else {
+      fDirectory = nullptr;
+   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -356,7 +360,11 @@ void TEventList::SetDirectory(TDirectory *dir)
    if (fDirectory == dir) return;
    if (fDirectory) fDirectory->Remove(this);
    fDirectory = dir;
-   if (fDirectory) fDirectory->Append(this);
+   if(fDirectory && fDirectory->GetAcceptsRegisters()){
+      fDirectory->Append(this);
+   } else {
+      fDirectory = nullptr;
+   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -368,7 +376,11 @@ void TEventList::SetName(const char *name)
    //  We must update the hashlist if we change the name
    if (fDirectory) fDirectory->Remove(this);
    fName = name;
-   if (fDirectory) fDirectory->Append(this);
+   if(fDirectory && fDirectory->GetAcceptsRegisters()){
+      fDirectory->Append(this);
+   } else {
+      fDirectory = nullptr;
+   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

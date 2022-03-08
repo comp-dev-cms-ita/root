@@ -541,9 +541,11 @@ TGraph2D::TGraph2D(const TGraph2D &g)
    // append TGraph2D to gdirectory
    if (TH1::AddDirectoryStatus()) {
       fDirectory = gDirectory;
-      if (fDirectory) {
+      if (fDirectory && fDirectory->GetAcceptsRegisters()) {
          // append without replacing existing objects
          fDirectory->Append(this);
+      } else {
+         fDirectory = nullptr;
       }
    }
 
@@ -635,10 +637,13 @@ void TGraph2D::Build(Int_t n)
 
    if (TH1::AddDirectoryStatus()) {
       fDirectory = gDirectory;
-      if (fDirectory) {
+      if (fDirectory && fDirectory->GetAcceptsRegisters()) {
          fDirectory->Append(this, kTRUE);
+      } else {
+         fDirectory = nullptr;
       }
    }
+
 }
 
 
@@ -1514,7 +1519,11 @@ void TGraph2D::SetDirectory(TDirectory *dir)
    if (fDirectory == dir) return;
    if (fDirectory) fDirectory->Remove(this);
    fDirectory = dir;
-   if (fDirectory) fDirectory->Append(this);
+   if(fDirectory && fDirectory->GetAcceptsRegisters()){
+      fDirectory->Append(this);
+   } else {
+      fDirectory = nullptr;
+   }
 }
 
 
@@ -1605,7 +1614,11 @@ void TGraph2D::SetName(const char *name)
    //  We must update the hashlist if we change the name
    if (fDirectory) fDirectory->Remove(this);
    fName = name;
-   if (fDirectory) fDirectory->Append(this);
+   if(fDirectory && fDirectory->GetAcceptsRegisters()){
+      fDirectory->Append(this);
+   } else {
+      fDirectory = nullptr;
+   }
 }
 
 
@@ -1620,7 +1633,11 @@ void TGraph2D::SetNameTitle(const char *name, const char *title)
    if (fDirectory) fDirectory->Remove(this);
    fName  = name;
    SetTitle(title);
-   if (fDirectory) fDirectory->Append(this);
+   if(fDirectory && fDirectory->GetAcceptsRegisters()){
+      fDirectory->Append(this);
+   } else {
+      fDirectory = nullptr;
+   }
 }
 
 

@@ -75,6 +75,7 @@ def _TFileEnter(obj):
     """
     Define a __enter__ method for TFile. Return the opened file
     """
+    obj.SetAcceptsRegisters(False)
     return obj
 
 

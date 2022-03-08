@@ -139,6 +139,8 @@ protected:
    TUUID            fUUID;              // Unique identifier
    mutable TString  fPathBuffer;        //! Buffer for GetPath() function
    TContext        *fContext{nullptr};  //! Pointer to a list of TContext object pointing to this TDirectory
+   /// Flag to signal whether the directory accepts registrations from histograms, graphs, etc.
+   Bool_t          fAcceptsRegisters{true};
 
    std::vector<std::atomic<TDirectory*>*> fGDirectories; //! thread local gDirectory pointing to this object.
 
@@ -165,6 +167,9 @@ protected:
    void operator=(const TDirectory &) = delete; //Directories cannot be copied
 
 public:
+
+   Bool_t GetAcceptsRegisters() const { return fAcceptsRegisters; }
+   void SetAcceptsRegisters(Bool_t value) { fAcceptsRegisters = value; }
 
    TDirectory();
    TDirectory(const char *name, const char *title, Option_t *option = "", TDirectory* motherDir = nullptr);
@@ -296,7 +301,7 @@ public:
    static void         DecodeNameCycle(const char *namecycle, char *name, Short_t &cycle, const size_t namesize = 0);
    static void         EncodeNameCycle(char *buffer, const char *name, Short_t cycle);
 
-   ClassDefOverride(TDirectory,5)  //Describe directory structure in memory
+   ClassDefOverride(TDirectory,6)  //Describe directory structure in memory
 };
 
 #ifndef __CINT__

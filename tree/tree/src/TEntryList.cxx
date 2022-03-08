@@ -197,7 +197,11 @@ TEntryList::TEntryList(const char *name, const char *title) :
    fReapply = kFALSE;
 
    fDirectory  = gDirectory;
-   if (fDirectory) fDirectory->Append(this);
+   if(fDirectory && fDirectory->GetAcceptsRegisters()){
+      fDirectory->Append(this);
+   } else {
+      fDirectory = nullptr;
+   }
 
    fLastIndexQueried = -1;
    fLastIndexReturned = 0;
@@ -219,7 +223,11 @@ TEntryList::TEntryList(const char *name, const char *title, const TTree *tree):T
    fReapply = kFALSE;
 
    fDirectory  = gDirectory;
-   if (fDirectory) fDirectory->Append(this);
+   if(fDirectory && fDirectory->GetAcceptsRegisters()){
+      fDirectory->Append(this);
+   } else {
+      fDirectory = nullptr;
+   }
 
    fLastIndexQueried = -1;
    fLastIndexReturned = 0;
@@ -241,7 +249,11 @@ TEntryList::TEntryList(const char *name, const char *title, const char *treename
    fReapply = kFALSE;
 
    fDirectory  = gDirectory;
-   if (fDirectory) fDirectory->Append(this);
+   if(fDirectory && fDirectory->GetAcceptsRegisters()){
+      fDirectory->Append(this);
+   } else {
+      fDirectory = nullptr;
+   }
 
    fLastIndexQueried = -1;
    fLastIndexReturned = 0;
@@ -264,7 +276,11 @@ TEntryList::TEntryList(const TTree *tree) : fEntriesToProcess(0)
 
    fReapply = kFALSE;
    fDirectory  = gDirectory;
-   if (fDirectory) fDirectory->Append(this);
+   if(fDirectory && fDirectory->GetAcceptsRegisters()){
+      fDirectory->Append(this);
+   } else {
+      fDirectory = nullptr;
+   }
 
    fLastIndexQueried = -1;
    fLastIndexReturned = 0;
@@ -1155,7 +1171,11 @@ void TEntryList::SetDirectory(TDirectory *dir)
    if (fDirectory == dir) return;
    if (fDirectory) fDirectory->Remove(this);
    fDirectory = dir;
-   if (fDirectory) fDirectory->Append(this);
+   if(fDirectory && fDirectory->GetAcceptsRegisters()){
+      fDirectory->Append(this);
+   } else {
+      fDirectory = nullptr;
+   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

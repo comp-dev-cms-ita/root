@@ -900,7 +900,11 @@ TTree::TTree(const char* name, const char* title, Int_t splitlevel /* = 99 */,
    // FIXME: This is very annoying behaviour, we should
    //        be able to choose to not do this like we
    //        can with a histogram.
-   if (fDirectory) fDirectory->Append(this);
+   if(fDirectory && fDirectory->GetAcceptsRegisters()){
+      fDirectory->Append(this);
+   } else {
+      fDirectory = nullptr;
+   }
 
    fBranches.SetOwner(kTRUE);
 
@@ -3806,7 +3810,11 @@ void TTree::DirectoryAutoAdd(TDirectory* dir)
    if (fBranchRef) {
       fBranchRef->UpdateFile();
    }
-   if (fDirectory) fDirectory->Append(this);
+   if(fDirectory && fDirectory->GetAcceptsRegisters()){
+      fDirectory->Append(this);
+   } else {
+      fDirectory = nullptr;
+   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -7907,7 +7915,11 @@ void TTree::Refresh()
       branch->Refresh(tree->GetBranch(branch->GetName()));
    }
    fDirectory->Remove(tree);
-   fDirectory->Append(this);
+   if(fDirectory && fDirectory->GetAcceptsRegisters()){
+      fDirectory->Append(this);
+   } else {
+      fDirectory = nullptr;
+   }
    delete tree;
    tree = 0;
 }
@@ -8926,8 +8938,10 @@ void TTree::SetDirectory(TDirectory* dir)
       MoveReadCache(file,dir);
    }
    fDirectory = dir;
-   if (fDirectory) {
+   if(fDirectory && fDirectory->GetAcceptsRegisters()){
       fDirectory->Append(this);
+   } else {
+      fDirectory = nullptr;
    }
    TFile* file = 0;
    if (fDirectory) {
@@ -9170,11 +9184,13 @@ void TTree::SetName(const char* name)
    }
    // This changes our hash value.
    fName = name;
-   if (fDirectory) {
+   if(fDirectory && fDirectory->GetAcceptsRegisters()){
       fDirectory->Append(this);
       if (pf) {
          file->SetCacheRead(pf,this,TFile::kDoNotDisconnect);
       }
+   } else {
+      fDirectory = nullptr;
    }
 }
 
@@ -9201,11 +9217,13 @@ void TTree::SetObject(const char* name, const char* title)
    // This changes our hash value.
    fName = name;
    fTitle = title;
-   if (fDirectory) {
+   if(fDirectory && fDirectory->GetAcceptsRegisters()){
       fDirectory->Append(this);
       if (pf) {
          file->SetCacheRead(pf,this,TFile::kDoNotDisconnect);
       }
+   } else {
+      fDirectory = nullptr;
    }
 }
 
